@@ -17,7 +17,7 @@ pip install --upgrade git+https://github.com/tensorflow/cleverhans.git#egg=cleve
 Use the script `./scripts/restrictedImgNet.py` to generate restrictedImgNet
 dataset and put the data in `./data/RestrictedImgNet/` with torchvision
 ImageFolder readable format. For more detail, please refer to
-[lolip/dataset/__init__.py](lolip/dataset/__init__.py).
+[lolip/datasets/\_\_init__.py](lolip/datasets/__init__.py).
 
 ## Repository structure
 
@@ -25,7 +25,7 @@ The spline example [notebooks/splines.ipynb](notebooks/splines.ipynb)
 
 ### Parameters
 
-The default training parameters are set in [lolip/models/__init__.py](lolip/models/__init__.py)
+The default training parameters are set in [lolip/models/\_\_init__.py](lolip/models/__init__.py)
 
 The network architecture defined in [lolip/models/torch_utils/archs.py](lolip/models/torch_utils/archs.py)
 
