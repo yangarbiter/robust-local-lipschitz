@@ -1,5 +1,15 @@
 # Adversarial Robustness Through Local Lipschitzness
 
+This repo contains the implementation of experiments in the paper
+
+[Adversarial Examples for Non-Parametric Methods: Attacks, Defenses and Large Sample Limits](https://arxiv.org/abs/2003.02460)
+
+Authors: [Yao-Yuan Yang](https://github.com/yangarbiter/)\*, [Cyrus Rashtchian](http://www.cyrusrashtchian.com)\*, Hongyang Zhang, Ruslan Salakhutdinov, Kamalika Chaudhuri (* equal contribution)
+
+## Abstract
+
+A standard method for improving the robustness of neural networks is adversarial training, where the network is trained on adversarial examples that are close to the training inputs. This produces classifiers that are robust, but it often decreases clean accuracy. Prior work even posits that the tradeoff between robustness and accuracy may be inevitable. We investigate this tradeoff in more depth through the lens of local Lipschitzness. In many image datasets, the classes are separated in the sense that images with different labels are not extremely close in <img src="https://render.githubusercontent.com/render/math?math=\ell_\infty"> distance. Using this separation as a starting point, we argue that it is possible to achieve both accuracy and robustness by encouraging the classifier to be locally smooth around the data. More precisely, we consider classifiers that are obtained by rounding locally Lipschitz functions. Theoretically, we show that such classifiers exist for any dataset such that there is a positive distance between the support of different classes. Empirically, we compare the local Lipschitzness of classifiers trained by several methods. Our results show that having a small Lipschitz constant correlates with achieving high clean and robust accuracy, and therefore, the smoothness of the classifier is an important property to consider in the context of adversarial examples.
+
 
 ## Setup
 
