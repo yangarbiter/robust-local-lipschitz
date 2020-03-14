@@ -2,7 +2,7 @@
 
 This repo contains the implementation of experiments in the paper
 
-[Adversarial Examples for Non-Parametric Methods: Attacks, Defenses and Large Sample Limits](https://arxiv.org/abs/2003.02460)
+[Adversarial Robustness Through Local Lipschitzness](https://arxiv.org/abs/2003.02460)
 
 Authors: [Yao-Yuan Yang](https://github.com/yangarbiter/)\*, [Cyrus Rashtchian](http://www.cyrusrashtchian.com)\*, Hongyang Zhang, Ruslan Salakhutdinov, Kamalika Chaudhuri (* equal contribution)
 
