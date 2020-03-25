@@ -50,8 +50,8 @@ The network architecture defined in [lolip/models/torch_utils/archs.py](lolip/mo
 
 #### Attack Algorithms
 
-- [Projected Gradient Descent](lolip/attacks/projected_gradient_descent.py)
-- [Multi-targeted](lolip/attacks/multi_target.py)
+- [Projected Gradient Descent](lolip/attacks/torch/projected_gradient_descent.py)
+- [Multi-targeted](lolip/attacks/torch/multi_target.py)
 
 ### Example options for model parameter
 

@@ -33,7 +33,8 @@ def run_experiment01(auto_var):
     print(f"train acc: {result['trn_acc']}")
     print(f"test acc: {result['tst_acc']}")
 
-    attack_model = auto_var.get_var("attack", model=model, n_classes=n_classes)
+    attack_model = auto_var.get_var("attack", model=model, n_classes=n_classes,
+                                    clip_min=0, clip_max=1)
     with Stopwatch("Attacking"):
         adv_trnX = attack_model.perturb(trnX, trny)
         adv_tstX = attack_model.perturb(tstX, tsty)
