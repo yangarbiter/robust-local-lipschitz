@@ -10,13 +10,7 @@ def get_hyper(name, loss, arch, dataset_name):
     ret = {}
     ret['optimizer'] = 'sgd'
 
-    if 'rbfw' in loss:
-        ret['epochs'] = 20
-        ret['learning_rate'] = 1e-4
-        ret['momentum'] = 0.9
-        ret['batch_size'] = 64
-
-    elif 'CNN' in arch and ('mnist' in dataset_name or 'fashion' in dataset_name):
+    if 'CNN' in arch and ('mnist' in dataset_name or 'fashion' in dataset_name):
         ret['epochs'] = 160
         ret['learning_rate'] = 1e-4
         ret['momentum'] = 0.9
@@ -32,24 +26,16 @@ def get_hyper(name, loss, arch, dataset_name):
             ret['epochs'] = 60
         elif 'cifar' in dataset_name:
             ret['epochs'] = 120
-        elif 'mnist' in dataset_name or 'fashion' in dataset_name:
-            ret['epochs'] = 120
         else:
             ret['epochs'] = 200
 
         if 'adv' in loss:
             ret['learning_rate'] = 1e-3
-        elif 'cure' in loss:
-            ret['learning_rate'] = 1e-5
         elif 'llr' in loss:
             ret['learning_rate'] = 1e-3
         else:
             ret['learning_rate'] = 1e-2
         ret['batch_size'] = 64
-    elif 'MLP' in arch:
-        ret['epochs'] = 60
-        ret['learning_rate'] = 1e-1
-        ret['batch_size'] = 128
     else:
         ret['epochs'] = 500
         ret['learning_rate'] = 1e-1
@@ -90,16 +76,20 @@ def get_hyper(name, loss, arch, dataset_name):
         elif 'bs16' in name:
             ret['batch_size'] = 16
 
-        if 'ep2' in name:
-            ret['epochs'] = 2
-        elif 'ep20' in name:
+        if 'ep20' in name:
             ret['epochs'] = 20
+        elif 'ep2' in name:
+            ret['epochs'] = 2
+        elif 'ep30' in name:
+            ret['epochs'] = 30
         elif 'ep40' in name:
             ret['epochs'] = 40
         elif 'ep50' in name:
             ret['epochs'] = 50
         elif 'ep60' in name:
             ret['epochs'] = 60
+        elif 'ep70' in name:
+            ret['epochs'] = 70
 
     return ret
 

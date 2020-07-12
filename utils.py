@@ -12,7 +12,7 @@ from lolip.variables import auto_var, get_file_name
 from autovar import AutoVar
 from autovar.hooks import get_ext
 
-from experiments import run_experiment01, run_restrictedImgnet
+from experiments import run_experiment01, run_restrictedImgnet, run_hypo, run_restrictedImgnetHypo
 
 logging.basicConfig(level=0)
 tex_base = "./tex_files"
@@ -21,11 +21,19 @@ def setup_experiments(auto_var):
     exp_name = 'experiment01'
     mkdir_p(f"./results/{exp_name}")
     auto_var.register_experiment(f'{exp_name}', run_experiment01,
-            {'file_format': 'pickle', 'result_file_dir': f'./results/{exp_name}'})
+            {'file_format': 'pickle', 'result_file_dir': f'./results/experiment02'})
     exp_name = 'restrictedImgnet'
     mkdir_p(f"./results/{exp_name}")
     auto_var.register_experiment(f'{exp_name}', run_restrictedImgnet,
-            {'file_format': 'pickle', 'result_file_dir': f'./results/{exp_name}'})
+            {'file_format': 'pickle', 'result_file_dir': f'./results/restrictedImgnet3/'})
+    exp_name = 'hypo'
+    mkdir_p(f"./results/{exp_name}")
+    auto_var.register_experiment(f'{exp_name}', run_hypo,
+            {'file_format': 'pickle', 'result_file_dir': f'./results/hypo/'})
+    exp_name = 'restrictedImgnetHypo'
+    mkdir_p(f"./results/{exp_name}")
+    auto_var.register_experiment(f'{exp_name}', run_restrictedImgnetHypo,
+            {'file_format': 'pickle', 'result_file_dir': f'./results/restrictedImgnetHypo/'})
 
 
 class Experiments():

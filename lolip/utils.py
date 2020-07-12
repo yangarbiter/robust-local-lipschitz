@@ -47,7 +47,7 @@ def estimate_local_lip_v2(model, X, top_norm, btm_norm,
         x = x[0]
         x = x.to(device)
         # generate adversarial example
-        if btm_norm in [2, np.inf]:
+        if btm_norm in [1, 2, np.inf]:
             x_adv = x + 0.001 * torch.randn(x.shape).to(device)
 
             # Setup optimizers

@@ -90,7 +90,42 @@ class WideResNet(nn.Module):
         out = out.view(-1, self.nChannels)
         return self.fc(out)
 
+class WRN_64_12(WideResNet):
+    def __init__(self, depth=52, n_classes=10, widen_factor=12, dropRate=0.0, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
+class WRN_64_10(WideResNet):
+    def __init__(self, depth=52, n_classes=10, widen_factor=12, dropRate=0.0, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
+class WRN_52_12(WideResNet):
+    def __init__(self, depth=52, n_classes=10, widen_factor=12, dropRate=0.0, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
+class WRN_52_10(WideResNet):
+    def __init__(self, depth=52, n_classes=10, widen_factor=10, dropRate=0.0, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
+class WRN_40_12(WideResNet):
+    def __init__(self, depth=40, n_classes=10, widen_factor=12, dropRate=0.0, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
 class WRN_40_10(WideResNet):
     def __init__(self, depth=40, n_classes=10, widen_factor=10, dropRate=0.0, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
+class WRN_40_10_drop20(WideResNet):
+    def __init__(self, depth=40, n_classes=10, widen_factor=10, dropRate=0.2, n_channels=3):
+        super().__init__(depth=depth, n_classes=n_classes,
+                widen_factor=widen_factor, dropRate=dropRate)
+
+class WRN_40_10_drop50(WideResNet):
+    def __init__(self, depth=40, n_classes=10, widen_factor=10, dropRate=0.5, n_channels=3):
         super().__init__(depth=depth, n_classes=n_classes,
                 widen_factor=widen_factor, dropRate=dropRate)

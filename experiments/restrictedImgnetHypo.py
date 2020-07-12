@@ -4,6 +4,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 import os
 
 import torch
+from torch.utils.data import ConcatDataset
 from bistiming import Stopwatch
 import numpy as np
 
@@ -11,7 +12,7 @@ from .utils import set_random_seed
 from lolip.utils import estimate_local_lip_v2
 
 
-def run_restrictedImgnet(auto_var):
+def run_restrictedImgnetHypo(auto_var):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     _ = set_random_seed(auto_var)
     norm = auto_var.get_var("norm")

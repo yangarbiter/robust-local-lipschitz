@@ -200,5 +200,5 @@ def projected_gradient_descent(model_fn, x, eps, eps_iter, nb_iter, norm, loss_f
     asserts.append(eps + clip_min <= clip_max)
 
   if sanity_checks:
-    assert np.all(asserts)
+    assert np.all(asserts), asserts
   return adv_x

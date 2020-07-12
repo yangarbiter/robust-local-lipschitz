@@ -26,7 +26,6 @@ def run_experiment01(auto_var):
     model.tst_ds = (tstX, tsty)
     with Stopwatch("Fitting Model"):
         history = model.fit(trnX, trny)
-    result['history'] = history
 
     result['trn_acc'] = (model.predict(trnX) == trny).mean()
     result['tst_acc'] = (model.predict(tstX) == tsty).mean()
@@ -34,7 +33,7 @@ def run_experiment01(auto_var):
     print(f"test acc: {result['tst_acc']}")
 
     attack_model = auto_var.get_var("attack", model=model, n_classes=n_classes,
-                                    clip_min=0, clip_max=1)
+                                    clip_min=0, clip_max=1,)
     with Stopwatch("Attacking"):
         adv_trnX = attack_model.perturb(trnX, trny)
         adv_tstX = attack_model.perturb(tstX, tsty)
@@ -47,13 +46,13 @@ def run_experiment01(auto_var):
     with Stopwatch("Estimating trn Lip"):
         trn_lip, _ = estimate_local_lip_v2(model.model, trnX, top_norm=1, btm_norm=norm,
                                     epsilon=auto_var.get_var("eps"), device=device)
-    result['avg_trn_lip'] = trn_lip
+    result['avg_trn_lip_1'] = trn_lip
     with Stopwatch("Estimating tst Lip"):
         tst_lip, _ = estimate_local_lip_v2(model.model, tstX, top_norm=1, btm_norm=norm,
                                      epsilon=auto_var.get_var("eps"), device=device)
-    result['avg_tst_lip'] = tst_lip
-    print(f"avg trn lip: {result['avg_trn_lip']}")
-    print(f"avg tst lip: {result['avg_tst_lip']}")
+    result['avg_tst_lip_1'] = tst_lip
+    print(f"avg trn lip: {result['avg_trn_lip_1']}")
+    print(f"avg tst lip: {result['avg_tst_lip_1']}")
 
     print(result)
     return result

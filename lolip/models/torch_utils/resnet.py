@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision.models.utils import load_state_dict_from_url
+import torch.nn.functional as F
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -78,7 +79,7 @@ class Bottleneck(nn.Module):
     __constants__ = ['downsample']
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None):
+                 base_width=64, dilation=1, norm_layer=None, drop_rate=0.):
         super(Bottleneck, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -93,6 +94,7 @@ class Bottleneck(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
         self.stride = stride
+        self.drop_rate = drop_rate
 
     def forward(self, x):
         identity = x
@@ -104,6 +106,9 @@ class Bottleneck(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
         out = self.relu(out)
+
+        if self.drop_rate > 0:
+            out = F.dropout(out, p=self.drop_rate, training=self.training)
 
         out = self.conv3(out)
         out = self.bn3(out)
@@ -121,8 +126,9 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, n_channels=3, num_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None):
+                 norm_layer=None, drop_rate=0.):
         super(ResNet, self).__init__()
+        self.drop_rate = drop_rate
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
@@ -190,7 +196,7 @@ class ResNet(nn.Module):
         for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes, groups=self.groups,
                                 base_width=self.base_width, dilation=self.dilation,
-                                norm_layer=norm_layer))
+                                norm_layer=norm_layer, drop_rate=self.drop_rate))
 
         return nn.Sequential(*layers)
 
@@ -258,6 +264,28 @@ def resnet50(pretrained=False, progress=True, **kwargs):
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress,
+                   **kwargs)
+
+def resnet50_drop20(pretrained=False, progress=True, **kwargs):
+    r"""ResNet-50 model from
+    `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, drop_rate=0.2,
+                   **kwargs)
+
+def resnet50_drop50(pretrained=False, progress=True, **kwargs):
+    r"""ResNet-50 model from
+    `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    return _resnet('resnet50', Bottleneck, [3, 4, 6, 3], pretrained, progress, drop_rate=0.5,
                    **kwargs)
 
 

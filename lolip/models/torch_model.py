@@ -4,7 +4,6 @@ from functools import partial
 import inspect
 
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
@@ -18,11 +17,9 @@ from ..attacks.torch.projected_gradient_descent import projected_gradient_descen
 from .torch_utils.trades import trades_loss
 from .torch_utils.llr import locally_linearity_regularization
 from .torch_utils.tulip import tulip_loss
-from .torch_utils.gradient_regularization import gradient_regularization
 from .torch_utils import data_augs
 
 DEBUG = int(os.getenv("DEBUG", 0))
-
 
 class TorchModel(BaseEstimator):
     def __init__(self, lbl_enc, n_features, n_classes, loss_name='ce',
@@ -66,9 +63,7 @@ class TorchModel(BaseEstimator):
         self.optimizer = get_optimizer(model, optimizer, learning_rate, momentum, weight_decay)
         self.model = model
 
-        #self.callbacks=callbacks
         self.random_state = random_state
-        #self.train_type = train_type
 
         self.tst_ds = None
         self.start_epoch = 1
@@ -91,13 +86,8 @@ class TorchModel(BaseEstimator):
 
         if y is None:
             return CustomTensorDataset((torch.from_numpy(X).float(), ), transform=transform)
-        if 'mse' in self.loss_name:
-            Y = self.lbl_enc.transform(y.reshape(-1, 1))
-            dataset = CustomTensorDataset(
-                (torch.from_numpy(X).float(), torch.from_numpy(Y).float()), transform=transform)
-        else:
-            dataset = CustomTensorDataset(
-                (torch.from_numpy(X).float(), torch.from_numpy(y).long()), transform=transform)
+        dataset = CustomTensorDataset(
+            (torch.from_numpy(X).float(), torch.from_numpy(y).long()), transform=transform)
         return dataset
 
     def _preprocess_x(self, X):
@@ -112,7 +102,7 @@ class TorchModel(BaseEstimator):
         log_interval = 1
 
         history = []
-        if 'lipl' in self.loss_name or 'tulip' in self.loss_name:
+        if 'tulip' in self.loss_name:
             loss_fn = get_loss(self.loss_name, reduction="none")
         else:
             loss_fn = get_loss(self.loss_name, reduction="sum")
@@ -144,16 +134,12 @@ class TorchModel(BaseEstimator):
                         beta = 10.0
                     elif 'trades20' in self.loss_name:
                         beta = 20.0
-                    elif 'trades16' in self.loss_name:
-                        beta = 16.0
                     elif 'trades6' in self.loss_name:
                         beta = 6.0
                     elif 'trades3' in self.loss_name:
                         beta = 3.0
                     elif 'trades.5' in self.loss_name:
                         beta = 0.5
-                    elif 'trades.1' in self.loss_name:
-                        beta = 0.1
                     else:
                         beta = 1.0
 
@@ -163,14 +149,9 @@ class TorchModel(BaseEstimator):
                         steps = 10
 
                     version = None
-                    if 'ptrades' in self.loss_name:
-                        version = "plus"
-                    elif 'pstrades' in self.loss_name:
-                        version = "plussum"
-                    elif 'strades' in self.loss_name:
+                    if 'strades' in self.loss_name:
                         version = "sum"
 
-                    #print(f"TRADES version: {version}")
                     outputs, loss = trades_loss(
                         self.model, loss_fn, x, y, norm=self.norm, optimizer=self.optimizer,
                         step_size=self.eps*2/steps, epsilon=self.eps, perturb_steps=steps, beta=beta,
@@ -217,24 +198,30 @@ class TorchModel(BaseEstimator):
                         step_size=epsilon/2, epsilon=epsilon, perturb_steps=2,
                         lambd=lambd, mu=mu, version=version
                     )
-                elif 'gr' in self.loss_name:
-                    if 'gr4' in self.loss_name:
-                        lambd = 4.0
-                    elif 'gr1e6' in self.loss_name:
-                        lambd = 1e6
-                    elif 'gr1e5' in self.loss_name:
-                        lambd = 1e5
-                    elif 'gr1e4' in self.loss_name:
-                        lambd = 1e4
-                    elif 'gr1e3' in self.loss_name:
-                        lambd = 1e3
-                    elif 'gr1e2' in self.loss_name:
-                        lambd = 1e2
+                elif 'advbeta' in self.loss_name:
+                    self.model.train()
+                    advx = projected_gradient_descent(self.model, x, y=y,
+                            clip_min=0, clip_max=1,
+                            eps_iter=self.eps/5,
+                            eps=self.eps, norm=self.norm, nb_iter=10)
+
+                    if 'beta.5' in self.loss_name:
+                        beta = 0.5
+                    elif 'beta8' in self.loss_name:
+                        beta = 8.
+                    elif 'beta4' in self.loss_name:
+                        beta = 4.
+                    elif 'beta2' in self.loss_name:
+                        beta = 2.
                     else:
-                        lambd = 1.0
-                    outputs, loss = gradient_regularization(
-                        self.model, loss_fn, self.optimizer, x, y, lambd=lambd)
+                        beta = 1.
+
+                    self.optimizer.zero_grad()
+                    outputs = self.model(advx)
+                    adv_loss = loss_fn(outputs, y)
+                    loss = loss_fn(self.model(x), y) + beta * adv_loss
                 else:
+                    self.model.train()
                     if 'adv' in self.loss_name:
                         x = projected_gradient_descent(self.model, x, y=y,
                                 clip_min=0, clip_max=1,
@@ -351,7 +338,6 @@ class TorchModel(BaseEstimator):
         return np.concatenate(ret, axis=0)
 
     def save(self, path):
-        #torch.save(self.model.state_dict(), path)
         if self.multigpu:
             model_state_dict = self.model.module.state_dict()
         else:

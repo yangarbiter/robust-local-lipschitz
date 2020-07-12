@@ -3,37 +3,18 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models import wide_resnet50_2, wide_resnet101_2
-from torchvision.models.resnet import _resnet, Bottleneck
 
 from .wideresnet import *
-from .resnet import resnet50, resnet152, resnet101
-
-def tWRN50_2(n_classes, n_channels):
-    return wide_resnet50_2(num_classes=n_classes)
-
-def tWRN101_2(n_classes, n_channels):
-    return wide_resnet101_2(num_classes=n_classes)
-
-def wide_resnet50_4(pretrained=False, progress=True, **kwargs):
-    kwargs['width_per_group'] = 64 * 4
-    return _resnet('wide_resnet50_4', Bottleneck, [3, 4, 6, 3],
-                   pretrained, progress, **kwargs)
-
-def wide_resnet50_5(pretrained=False, progress=True, **kwargs):
-    kwargs['width_per_group'] = 64 * 5
-    return _resnet('wide_resnet50_5', Bottleneck, [3, 4, 6, 3],
-                   pretrained, progress, **kwargs)
-
-
-def tWRN50_4(n_classes, n_channels):
-    return wide_resnet50_4(num_classes=n_classes)
-
-def tWRN50_5(n_classes, n_channels):
-    return wide_resnet50_5(num_classes=n_classes)
+from .resnet import resnet50, resnet152, resnet101, resnet50_drop50, resnet50_drop20
 
 def ResNet101(n_classes, n_channels):
     return resnet101(pretrained=False, n_channels=n_channels, num_classes=n_classes)
+
+def ResNet50_drop20(n_classes, n_channels):
+    return resnet50_drop20(pretrained=False, n_channels=n_channels, num_classes=n_classes)
+
+def ResNet50_drop50(n_classes, n_channels):
+    return resnet50_drop50(pretrained=False, n_channels=n_channels, num_classes=n_classes)
 
 def ResNet50(n_classes, n_channels):
     return resnet50(pretrained=False, n_channels=n_channels, num_classes=n_classes)

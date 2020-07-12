@@ -55,28 +55,11 @@ def get_optimizer(model, optimizer: str, learning_rate: float, momentum, weight_
         raise ValueError(f"Not supported optimizer {optimizer}")
     return ret
 
-
-class CustomKLDivLoss(nn.KLDivLoss):
-    __constants__ = ['reduction']
-
-    def __init__(self, size_average=None, reduce=None, reduction='mean'):
-        super(CustomKLDivLoss, self).__init__(size_average, reduce, reduction)
-
-    def forward(self, inputs, target):
-        nb_classes = inputs.shape[1]
-        y_onehot = torch.zeros_like(inputs) + 1e-6
-        y_onehot = y_onehot.scatter_(1, target.unsqueeze(1), 1 - (1e-6*(nb_classes-1)))
-
-        return F.kl_div(F.log_softmax(inputs, dim=1),
-                        y_onehot, reduction=self.reduction)
-
 def get_loss(loss_name: str, reduction='sum'):
     if 'ce' in loss_name:
         ret = nn.CrossEntropyLoss(reduction=reduction)
     elif 'mse' in loss_name:
         ret = nn.MSELoss(reduction=reduction)
-    elif 'kld' in loss_name:
-        ret = CustomKLDivLoss(reduction=reduction)
     else:
         raise ValueError(f"Not supported loss {loss_name}")
     return ret
@@ -84,7 +67,11 @@ def get_loss(loss_name: str, reduction='sum'):
 def get_scheduler(optimizer, n_epochs: int, loss_name=None):
     scheduler = MultiStepLR
 
-    if n_epochs <= 40:
+    if n_epochs <= 20:
+        scheduler = scheduler(optimizer, milestones=[10, 15], gamma=0.1)
+    elif n_epochs <= 30:
+        scheduler = scheduler(optimizer, milestones=[15, 25], gamma=0.1)
+    elif n_epochs <= 40:
         scheduler = scheduler(optimizer, milestones=[20, 30], gamma=0.1)
     elif n_epochs <= 50:
         scheduler = scheduler(optimizer, milestones=[25, 40], gamma=0.1)
